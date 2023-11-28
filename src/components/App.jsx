@@ -1,51 +1,41 @@
-import React, { useEffect } from 'react';
-import { ContactForm } from './ContactForm/ContactForm';
-import { ContactList } from './ContactList/ContactList';
-import { ContactFilter } from './ContactFilter/ContactFilter';
-import { Container, TitlePhoneBook, TitleContacts } from './AppStyled';
-import { useSelector, useDispatch } from 'react-redux';
-import { saveContact, filterContacts, deleteContact } from '../redux/store';
+import React from 'react';
 
-export const App = () => {
-  const dispatch = useDispatch();
-  const getContacts = state => state.contacts.phoneBook;
-  const getFilter = state => state.contacts.filter;
-  const contacts = useSelector(getContacts);
-  const filter = useSelector(getFilter);
+import ContactForm from './ContactForm/ContactForm';
 
-  useEffect(() => {
-    window.localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
+import ContactList from './ContactList/ContactList';
 
-  const onformSubmit = ({ id, name, number }) => {
-    const contact = { id, name, number };
-    dispatch(saveContact(contact));
-  };
+import Filter from './Filter/Filter';
 
-  const onFilter = e => {
-    dispatch(filterContacts(e.currentTarget.value));
-  };
+const App = () => {
+  // const [contacts, setContacts] = useState(() => {
+  // const stringifiedContacts = localStorage.getItem('contacts');
+  //   const parsetContacts = JSON.parse(stringifiedContacts);
+  //   if (parsetContacts) {
+  //     return parsetContacts;
+  //   }
+  //   return [
+  //     { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+  //     { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+  //     { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+  //     { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+  //   ];
+  // });
 
-  const onDelete = id => {
-    dispatch(deleteContact(id));
-  };
-
-  const filterContactsNew = contacts.filter(data =>
-    data.name.toLowerCase().includes(filter.toLowerCase())
-  );
+  // useEffect(() => {
+  //   const stringifiedContacts = JSON.stringify(contacts);
+  //   localStorage.setItem('contacts', stringifiedContacts);
+  // }, [contacts]);
 
   return (
-    <Container>
-      <TitlePhoneBook>Phonebook</TitlePhoneBook>
-      <ContactForm onSubmit={onformSubmit} contacts={contacts} />
-      <TitleContacts>Contacts</TitleContacts>
-      <ContactFilter onFilter={onFilter} filter={filter} />
-      <ContactList
-        contacts={contacts}
-        filter={filter}
-        onDelete={onDelete}
-        filterContacts={filterContactsNew}
-      />
-    </Container>
+    <div>
+      <h1>Phonebook</h1>
+      <ContactForm />
+
+      <h2>Contacts</h2>
+      <Filter />
+      <ContactList />
+    </div>
   );
 };
+
+export default App;

@@ -1,56 +1,119 @@
-import { Formik } from 'formik';
+import React, { useState } from 'react';
 import { nanoid } from 'nanoid';
-import propTypes from 'prop-types';
-import { MainForm, AddButton, FormLabel, Input } from './ContactFormStyled';
 
-export const ContactForm = ({ onSubmit, contacts }) => {
-  const handleSubmit = ({ name, number }, { resetForm }) => {
-    const nameInContacts = contacts.find(
-      contact => contact.name.toLowerCase() === name.toLowerCase()
-    );
-    if (nameInContacts) {
-      alert(`${name} is already in contacts`);
-      return;
-    }
-    const contact = { id: nanoid(), name, number };
-    onSubmit(contact);
-    resetForm();
+import css from './ContactForm.module.css';
+import { useDispatch } from 'react-redux';
+
+import { addContact } from 'redax/contactFormReduсer';
+
+const ContactForm = () => {
+  const [fields, setFields] = useState({ name: '', number: '' });
+
+  const dispatch = useDispatch();
+
+  const handleInputChange = event => {
+    setFields({ ...fields, [event.target.name]: event.target.value });
+  };
+
+  const handleSubmit = event => {
+    event.preventDefault();
+
+    const contactData = {
+      id: nanoid(),
+      name: fields.name,
+      number: fields.number,
+    };
+
+    dispatch(addContact(contactData));
+
+    setFields({ name: '', number: '' });
   };
 
   return (
-    <Formik initialValues={{ name: '', number: '' }} onSubmit={handleSubmit}>
-      <MainForm autoComplete="off">
-        <div>
-          <FormLabel htmlFor="name">Name</FormLabel>
-          <div>
-            <Input
-              type="text"
-              name="name"
-              pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-              title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-              required
-            />
-          </div>
-        </div>
-        <div>
-          <FormLabel htmlFor="number">Number</FormLabel>
-          <div>
-            <Input
-              type="tel"
-              name="number"
-              pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-              title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-              required
-            />
-          </div>
-        </div>
-        <AddButton type="submit">Add contact</AddButton>
-      </MainForm>
-    </Formik>
+    <form onSubmit={handleSubmit}>
+      <label>
+        <span className={css.title}>Name</span>
+        <input
+          onChange={handleInputChange}
+          value={fields.name}
+          type="text"
+          name="name"
+          required
+        />
+      </label>
+      <label>
+        <span className={css.title}>Number</span>
+        <input
+          onChange={handleInputChange}
+          value={fields.number}
+          type="tel"
+          name="number"
+          required
+        />
+      </label>
+      <span className={css.btn}>
+        <button type="submit">Add contact</button>
+      </span>
+    </form>
   );
 };
 
-ContactForm.propTypes = {
-  onSubmit: propTypes.func.isRequired,
-  contacts: propTypes.arrayOf(propTypes.object).isRequired,
-};
+export default ContactForm;
+
+//   import React, { useState } from 'react';
+// import { nanoid } from 'nanoid';
+
+// import css from './ContactForm.module.css';
+
+// const ContactForm = ({addContact}) => {
+// const [fields, setFields] = useState({name: '', number: ''})
+
+//   const handleInputChange = event => {
+//     setFields({...fields, [event.target.name]: event.target.value})
+//   };
+
+//   const handleSubmit = event => {
+
+//     event.preventDefault();
+
+//     const contactData = {
+//       id: nanoid(),
+//       name: fields.name,
+//       number: fields.number,
+//       }
+
+//     addContact(contactData);
+
+//     setFields({name: '', number: ''});
+//   }
+
+//     return (
+//       <form onSubmit={handleSubmit}>
+//         <label>
+//           <span className={css.title}>Name</span>
+//           <input
+//             onChange={handleInputChange}
+//             value={fields.name}
+//             type="text"
+//             name="name"
+//             required
+//           />
+//         </label>
+//         <label>
+//           <span className={css.title}>Number</span>
+//           <input
+//             onChange={handleInputChange}
+//             value={fields.number}
+//             type="tel"
+//             name="number"
+//             required
+//           />
+//         </label>
+//         <span className={css.btn}>
+//           <button type="submit">Add contact</button>
+//         </span>
+//       </form>
+//     )
+// }
+
+//   export default ContactForm
