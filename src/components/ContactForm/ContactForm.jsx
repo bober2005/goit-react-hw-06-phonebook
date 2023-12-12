@@ -1,119 +1,59 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { Formik, Field, ErrorMessage } from 'formik';
+import * as yup from 'yup';
 import { nanoid } from 'nanoid';
+import { FormEl } from './ContactForm.styled';
 
-import css from './ContactForm.module.css';
-import { useDispatch } from 'react-redux';
+export default function ContactForm({ onSubmit }) {
+  const [name] = useState('');
+  const [number] = useState('');
 
-import { addContact } from 'redax/contactFormReduсer';
+  const value = { name, number };
 
-const ContactForm = () => {
-  const [fields, setFields] = useState({ name: '', number: '' });
-
-  const dispatch = useDispatch();
-
-  const handleInputChange = event => {
-    setFields({ ...fields, [event.target.name]: event.target.value });
+  const schema = () => {
+    return yup.object().shape({
+      name: yup.string().min(4).max(32).required(),
+      number: yup.string().min(6).max(16).required(),
+    });
   };
 
-  const handleSubmit = event => {
-    event.preventDefault();
-
-    const contactData = {
+  const handleSubmit = ({ name, number }, { resetForm }) => {
+    const newState = {
       id: nanoid(),
-      name: fields.name,
-      number: fields.number,
+      name,
+      number,
     };
+    onSubmit(newState);
 
-    dispatch(addContact(contactData));
-
-    setFields({ name: '', number: '' });
+    resetForm();
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        <span className={css.title}>Name</span>
-        <input
-          onChange={handleInputChange}
-          value={fields.name}
+    <Formik
+      initialValues={value}
+      onSubmit={handleSubmit}
+      validationSchema={schema}
+    >
+      <FormEl>
+        <label htmlFor="nameId">Name</label>
+        <Field
           type="text"
           name="name"
-          required
+          placeholder="Rosie Simpson"
+          id="nameId"
         />
-      </label>
-      <label>
-        <span className={css.title}>Number</span>
-        <input
-          onChange={handleInputChange}
-          value={fields.number}
+        <ErrorMessage name="name" />
+        <label htmlFor="numId">Number</label>
+        <Field
           type="tel"
           name="number"
-          required
+          placeholder="066-459-12-56"
+          id="numId"
         />
-      </label>
-      <span className={css.btn}>
+        <ErrorMessage name="number" />
+
         <button type="submit">Add contact</button>
-      </span>
-    </form>
+      </FormEl>
+    </Formik>
   );
-};
-
-export default ContactForm;
-
-//   import React, { useState } from 'react';
-// import { nanoid } from 'nanoid';
-
-// import css from './ContactForm.module.css';
-
-// const ContactForm = ({addContact}) => {
-// const [fields, setFields] = useState({name: '', number: ''})
-
-//   const handleInputChange = event => {
-//     setFields({...fields, [event.target.name]: event.target.value})
-//   };
-
-//   const handleSubmit = event => {
-
-//     event.preventDefault();
-
-//     const contactData = {
-//       id: nanoid(),
-//       name: fields.name,
-//       number: fields.number,
-//       }
-
-//     addContact(contactData);
-
-//     setFields({name: '', number: ''});
-//   }
-
-//     return (
-//       <form onSubmit={handleSubmit}>
-//         <label>
-//           <span className={css.title}>Name</span>
-//           <input
-//             onChange={handleInputChange}
-//             value={fields.name}
-//             type="text"
-//             name="name"
-//             required
-//           />
-//         </label>
-//         <label>
-//           <span className={css.title}>Number</span>
-//           <input
-//             onChange={handleInputChange}
-//             value={fields.number}
-//             type="tel"
-//             name="number"
-//             required
-//           />
-//         </label>
-//         <span className={css.btn}>
-//           <button type="submit">Add contact</button>
-//         </span>
-//       </form>
-//     )
-// }
-
-//   export default ContactForm
+}

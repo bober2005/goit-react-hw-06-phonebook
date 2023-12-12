@@ -1,8 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
-
+import { persistedReducer } from './contactsSlice';
+import { filterReducer } from './contactFilter';
 import {
   persistStore,
-  persistReducer,
   FLUSH,
   REHYDRATE,
   PAUSE,
@@ -10,20 +10,12 @@ import {
   PURGE,
   REGISTER,
 } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-
-import { contactFormReducer } from './contactFormReduсer';
-
-const contactFormConfig = {
-  key: 'contactForm',
-  storage,
-  whitelist: ['contacts'],
-  //   blacklist: ['filter'], //записуєм яке не хочемо дабавляти в локал
-};
 
 export const store = configureStore({
-  reducer: persistReducer(contactFormConfig, contactFormReducer),
-
+  reducer: {
+    contacts: persistedReducer,
+    filter: filterReducer,
+  },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: {

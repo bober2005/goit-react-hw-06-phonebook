@@ -1,22 +1,22 @@
-import React from 'react';
-import css from '../ContactForm/ContactForm.module.css';
-
+import { Input } from './Filter.styled';
 import { useSelector, useDispatch } from 'react-redux';
-import { setFilter } from 'redax/contactFormReduсer';
+import { setFilter } from 'redux/contactFilter';
 
-export default function Filter() {
-  const filter = useSelector(state => state.filter);
+const Filter = () => {
+  const { filter } = useSelector(state => state.filter);
   const dispatch = useDispatch();
 
   return (
-    <label>
-      <span className={css.title}>Find contacts by name</span>
-      <input
+    <>
+      <Input
+        placeholder="Search name"
+        type="text"
+        name="filter"
         value={filter}
         onChange={e => dispatch(setFilter(e.target.value))}
-        name="filter"
-        type="text"
       />
-    </label>
+    </>
   );
-}
+};
+
+export default Filter;
