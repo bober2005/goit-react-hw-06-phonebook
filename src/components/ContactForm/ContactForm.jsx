@@ -1,21 +1,32 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Field, ErrorMessage } from 'formik';
 import * as yup from 'yup';
 import { nanoid } from 'nanoid';
 import { FormEl } from './ContactForm.styled';
+import { addContact } from 'redux/contactsSlice';
 
-export default function ContactForm({ onSubmit }) {
-  const [name] = useState('');
-  const [number] = useState('');
+const schema = yup.object().shape({
+  name: yup.string().min(4).max(32).required(),
+  number: yup.string().min(6).max(16).required(),
+});
+
+const ContactForm = () => {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
+
+  const { contacts } = useSelector(state => state.contacts);
+  const dispatch = useDispatch();
+
+  const formSubmitHandler = contact => {
+    if (contacts.find(({ name }) => name === contact.name)) {
+      return alert(`${contact.name} is already in contacts`);
+    }
+
+    dispatch(addContact(contact));
+  };
 
   const value = { name, number };
-
-  const schema = () => {
-    return yup.object().shape({
-      name: yup.string().min(4).max(32).required(),
-      number: yup.string().min(6).max(16).required(),
-    });
-  };
 
   const handleSubmit = ({ name, number }, { resetForm }) => {
     const newState = {
@@ -23,7 +34,7 @@ export default function ContactForm({ onSubmit }) {
       name,
       number,
     };
-    onSubmit(newState);
+    formSubmitHandler(newState);
 
     resetForm();
   };
@@ -56,4 +67,6 @@ export default function ContactForm({ onSubmit }) {
       </FormEl>
     </Formik>
   );
-}
+};
+
+export default ContactForm;
