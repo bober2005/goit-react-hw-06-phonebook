@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Field, ErrorMessage } from 'formik';
 import * as yup from 'yup';
@@ -12,9 +12,6 @@ const schema = yup.object().shape({
 });
 
 const ContactForm = () => {
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
-
   const { contacts } = useSelector(state => state.contacts);
   const dispatch = useDispatch();
 
@@ -25,8 +22,6 @@ const ContactForm = () => {
 
     dispatch(addContact(contact));
   };
-
-  const value = { name, number };
 
   const handleSubmit = ({ name, number }, { resetForm }) => {
     const newState = {
@@ -41,7 +36,7 @@ const ContactForm = () => {
 
   return (
     <Formik
-      initialValues={value}
+      initialValues={{ name: '', number: '' }}
       onSubmit={handleSubmit}
       validationSchema={schema}
     >
